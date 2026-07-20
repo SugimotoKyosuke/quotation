@@ -1,0 +1,8 @@
+venv/
+secrets/
+*.sqlite3
+staticfiles/
+media/
+__pycache__/
+*.pyc
+.vscode/

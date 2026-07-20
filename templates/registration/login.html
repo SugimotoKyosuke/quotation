@@ -1,0 +1,145 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ログイン | 見積システム</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+  <style>
+    :root {
+      --bs-primary: #2AAB9F;
+      --bs-primary-rgb: 42, 171, 159;
+    }
+
+    .btn-primary {
+      --bs-btn-bg: #2AAB9F;
+      --bs-btn-border-color: #2AAB9F;
+      --bs-btn-hover-bg: #23948A;
+      --bs-btn-hover-border-color: #23948A;
+      --bs-btn-active-bg: #1F857B;
+      --bs-btn-active-border-color: #1F857B;
+    }
+
+    .text-primary {
+      color: #2AAB9F !important;
+    }
+
+    a {
+      color: #2AAB9F;
+    }
+    a:hover {
+      color: #23948A;
+    }
+
+    h4 {
+      color: #444441  ;
+    }
+  </style>
+</head>
+
+<body class="bg-body-tertiary">
+
+  <div class="container vh-100 d-flex align-items-center justify-content-center">
+
+    <div class="card shadow border-0 rounded-4" style="width: 480px;">
+
+      <div class="card-body p-5">
+
+        <div class="text-center mb-4">
+          <h4 class="my-3">見積システム</h4>
+          <img src="{% static 'images/logo_green.png' %}" alt="ミ・ツモーレ" style="height: 64px;">
+        </div>
+
+        <form method="post">
+
+          {% csrf_token %}
+
+          {% if form.errors %}
+          <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            ユーザー名 または パスワードが正しくありません。
+          </div>
+          {% endif %}
+
+          <div class="mb-3">
+
+            <label class="form-label">
+              ユーザー名
+            </label>
+
+            {{ form.username }}
+
+          </div>
+
+          <div class="mb-4">
+
+            <label class="form-label">
+              パスワード
+            </label>
+
+            <div class="position-relative">
+
+              {{ form.password }}
+
+              <i id="togglePassword" class="bi bi-eye position-absolute" style="
+                                right: 15px;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                cursor: pointer;
+                            ">
+              </i>
+
+            </div>
+
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2">
+            ログイン
+          </button>
+
+        </form>
+
+        <div class="text-center mt-4">
+
+          <a href="mailto:sample@sample.com" class="small text-decoration-none">
+            パスワードを忘れた方はこちら
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const passwordInput = document.getElementById("id_password");
+    const togglePassword = document.getElementById("togglePassword");
+
+    togglePassword.addEventListener("click", function () {
+
+      if (passwordInput.type === "password") {
+
+        passwordInput.type = "text";
+        togglePassword.classList.replace("bi-eye", "bi-eye-slash");
+
+      } else {
+
+        passwordInput.type = "password";
+        togglePassword.classList.replace("bi-eye-slash", "bi-eye");
+
+      }
+
+    });
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<h2 class="mb-4">案件編集</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="{{ form.name.id_for_label }}" class="form-label">
+            {{ form.name.label }}
+            {% if form.name.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+            {% endif %}
+        </label>
+        {{ form.name }}
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.customer_name.id_for_label }}" class="form-label">
+            {{ form.customer_name.label }}
+            {% if form.customer_name.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+            {% endif %}
+        </label>
+        {{ form.customer_name }}
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.service.id_for_label }}" class="form-label">
+            {{ form.service.label }}
+            {% if form.service.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+            {% endif %}
+        </label>
+        {{ form.service }}
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.assignee_user.id_for_label }}" class="form-label">
+            {{ form.assignee_user.label }}
+            {% if form.assignee_user.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+            {% endif %}
+        </label>
+        {{ form.assignee_user }}
+    </div>
+
+    <div class="mb-4">
+        <label for="{{ form.note.id_for_label }}" class="form-label">
+            備考
+        </label>
+        {{ form.note }}
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'project_detail' object.pk %}" class="btn btn-link text-decoration-none text-primary">
+            キャンセル
+        </a>
+
+        <button type="submit" class="btn btn-primary">
+            保存
+        </button>
+    </div>
+</form>
+
+{% endblock %}

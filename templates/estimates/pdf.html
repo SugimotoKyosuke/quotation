@@ -1,0 +1,233 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    @page {
+        size: A4;
+        margin: 20mm;
+    }
+    body {
+        font-family: "Yu Gothic", "Noto Sans JP", sans-serif;
+        font-size: 12px;
+        color: #333;
+    }
+    h1 {
+        text-align: center;
+        letter-spacing: 16px;
+        margin: 0 0 32px;
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+    }
+    .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+    }
+    .customer-block {
+        width: 70%;
+        font-size: 14px;
+        color: #333;
+    }
+    .customer-block .name {
+        font-size: 16px;
+        font-weight: bold;
+        border-bottom: 1px solid #333;
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+        display: inline-block;
+        min-width: 240px;
+    }
+    .customer-block .greeting {
+        font-size: 12px;
+        margin-bottom: 16px;
+    }
+    .customer-block .detail-row {
+        display: flex;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    .customer-block .detail-row .label {
+        width: 80px;
+        flex-shrink: 0;
+    }
+    .total-box {
+        border: 1px solid #333; ;
+        padding: 12px 16px;
+        margin-top: 14px;
+        display: inline-block;
+    }
+    .total-box .label {
+        font-size: 14px;
+    }
+    .total-box .amount {
+        font-size: 24px;
+        font-weight: bold;
+        margin-left: 12px;
+    }
+    .issuer-block {
+        width: 30%;
+        display: flex;
+        flex-direction: column;
+        font-size: 12px;
+    }
+    .issuer-block .meta-row {
+        display: flex;
+        white-space: nowrap;
+        margin-bottom: 4px;
+    }
+    .issuer-block .meta-row .label {
+        width: 60px;
+        flex-shrink: 0;
+    }
+    .company-info {
+        margin-top: 16px;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+    }
+    th {
+        border-bottom: 1px solid #333;
+        padding: 8px 6px;
+        font-size: 12px;
+        text-align: left;
+        font-weight: bold;
+        background-color: #f5f5f5;
+    }
+    td {
+        border-bottom: 1px solid #ddd;
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+    td.number, th.number {
+        text-align: right;
+    }
+    .summary {
+        width: 240px;
+        margin-left: auto;
+        margin-top: 12px;
+    }
+    .summary table td {
+        border: none;
+        padding: 4px 6px;
+        font-size: 14px;
+    }
+    .summary .grand-total td {
+        font-weight: bold;
+    }
+    .note {
+        margin-top: 16px;
+        padding: 8px 6px;
+        border-top: 1px solid #333;
+    }
+    .note .label {
+        font-size: 14px;
+        margin: 8px 0;
+    }
+    .note .value {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+</style>
+</head>
+
+<body>
+
+    <h1>見積書</h1>
+
+    <div class="header-row">
+        <div class="customer-block">
+            <div class="name">{{ estimate.project.customer_name }} 御中</div>
+            <div class="greeting">下記のとおり御見積り申し上げます。</div>
+
+            <div class="detail-row">
+                <span class="label">件名</span>
+                <span>{{ estimate.title }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">有効期限</span>
+                <span>{{ estimate.expiration_date }}</span>
+            </div>
+
+            <div class="total-box">
+                <span class="label">お見積金額</span>
+                <span class="amount">¥{{ estimate.total_amount|intcomma }}</span>
+            </div>
+        </div>
+
+        <div class="issuer-block">
+            <div class="meta-row">
+                <span class="label">見積番号</span>
+                <span>{{ estimate.estimate_number }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="label">見積日</span>
+                <span>{{ estimate.quote_date }}</span>
+            </div>
+
+            <div class="company-info">
+                〒141-0001<br>
+                東京都品河区南品河5-1-18 <br>
+                株式会社ダウンバック<br>
+                担当：{{ estimate.project.assignee_user.last_name }} {{ estimate.project.assignee_user.first_name }}<br>
+                TEL：080-1234-5678
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 40%;">品目</th>
+                <th style="width: 15%;">数量</th>
+                <th style="width: 15%;">単位</th>
+                <th style="width: 15%;">単価</th>
+                <th style="width: 15%;">金額</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in estimate.lines.all %}
+            <tr>
+                <td>{{ line.item_name }}</td>
+                <td class="number">{{ line.quantity|intcomma }}</td>
+                <td>{{ line.unit }}</td>
+                <td class="number">¥{{ line.unit_price|floatformat:0|intcomma }}</td>
+                <td class="number">¥{{ line.amount|floatformat:0|intcomma }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="summary">
+        <table>
+            <tr>
+                <td>小計</td>
+                <td class="number">¥{{ estimate.subtotal|floatformat:0|intcomma }}</td>
+            </tr>
+            <tr>
+                <td>消費税（{{ estimate.tax_rate }}%）</td>
+                <td class="number">¥{{ estimate.tax_amount|floatformat:0|intcomma }}</td>
+            </tr>
+            <tr class="grand-total">
+                <td>合計</td>
+                <td class="number">¥{{ estimate.total_amount|intcomma }}</span></td>
+            </tr>
+        </table>
+    </div>
+
+    {% if estimate.note %}
+    <div class="note">
+        <div class="label">備考</div>
+        <div class="value">{{ estimate.note|linebreaksbr }}</div>
+    </div>
+    {% endif %}
+
+</body>
+</html>

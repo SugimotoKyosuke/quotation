@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block main %}
+
+<div class="mb-4">
+    <a href="{% url 'estimate_index' %}" class="text-decoration-none">
+        <i class="bi bi-arrow-left"></i>
+        見積一覧へ戻る
+    </a>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">{{ object.title }}</h2>
+
+  <div>
+    <a href="{% url 'estimate_pdf' object.pk %}" class="btn btn-outline-primary" target="_blank">
+      <i class="bi bi-filetype-pdf"></i>
+      PDF出力
+    </a>
+    <a href="{% url 'estimate_edit' object.pk %}" class="btn btn-primary">
+      編集
+    </a>
+  </div>
+</div>
+
+
+<table class="table">
+  <tbody>
+   
+      <tr>
+          <th style="width: 240px;">ステータス</th>
+          <td>
+            <span class="status-badge {{ object.get_status_badge_class }}">
+                {{ object.get_status_display }}
+            </span>          
+          </td>
+      </tr> 
+      <tr>
+          <th style="width: 240px;">見積番号</th>
+          <td>{{ object.estimate_number }}</td>
+      </tr>   
+      <tr>
+          <th style="width: 240px;">案件</th>
+          <td>
+            <a href="{% url 'project_detail' object.project.pk %}">{{ object.project.name }}</a>
+          </td>
+      </tr>   
+      <tr>
+          <th style="width: 240px;">原価</th>
+          <td>
+            {% if object.cost_estimate %}
+                <a href="{% url 'cost_estimate_detail' object.cost_estimate.pk %}">
+                    {{ object.cost_estimate.title }}
+                </a>
+            {% else %}
+                <span class="text-muted">---------</span>
+            {% endif %}
+          </td>
+      </tr>
+      <tr>
+          <th style="width: 240px;">見積日</th>
+          <td>{{ object.quote_date|date:"Y/m/d" }}</td>
+      </tr>
+      <tr>
+          <th style="width: 240px;">有効期限</th>
+          <td>{{ object.expiration_date|date:"Y/m/d" }}</td>
+      </tr>
+      <tr>
+          <th style="width: 240px;">備考</th>
+          <td>{{ object.note|linebreaksbr }}</td>
+      </tr>      
+      <tr>
+          <th style="width: 240px;">登録日時</th>
+          <td>{{ object.created_at|date:"Y/m/d H:i" }}</td>
+      </tr>
+      <tr>
+          <th style="width: 240px;">更新日時</th>
+          <td>{{ object.updated_at|date:"Y/m/d H:i" }}</td>
+      </tr>
+  </tbody>
+</table>
+
+<h5 class="mt-4 mb-3" >明細</h5>
+
+<table class="table align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>品目</th>
+      <th>数量</th>
+      <th>単位</th>
+      <th>単価</th>
+      <th>金額</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for line in object.lines.all %}
+    <tr>
+      <td>{{ line.item_name }}</td>
+      <td class="text-end">{{ line.quantity|intcomma }}</td>
+      <td>{{ line.unit }}</td>
+      <td class="text-end {% if line.unit_price < 0 %}text-danger{% endif %}">{{ line.unit_price|floatformat:0|intcomma }} 円</td>
+      <td class="text-end {% if line.amount < 0 %}text-danger{% endif %}">{{ line.amount|floatformat:0|intcomma }} 円</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6" class="text-center text-muted">
+        データがありません
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<table class="table mt-4 w-auto ms-auto text-end">
+    <tbody>
+        <tr>
+            <th>小計</th>
+            <td class=" {% if object.subtotal < 0 %}text-danger{% endif %}">{{ object.subtotal|floatformat:0|intcomma }} 円</td>
+        </tr>
+        <tr>
+            <th>税率</th>
+            <td>{{ object.tax_rate|floatformat:0|intcomma }} %</td>
+        </tr>
+        <tr>
+            <th>消費税</th>
+            <td class=" {% if object.tax_amount < 0 %}text-danger{% endif %}">{{ object.tax_amount|floatformat:0|intcomma }} 円</td>
+        </tr>
+        <tr>
+            <th>合計</th>
+            <td class=" {% if object.total_amount < 0 %}text-danger{% endif %}">{{ object.total_amount|floatformat:0|intcomma }} 円</td>
+        </tr>
+        
+        {% if object.cost_estimate %}
+        <tr>
+            <th>原価</th>
+            <td class="{% if object.cost_amount < 0 %}text-danger{% endif %}">
+                {{ object.cost_amount|floatformat:0|intcomma }} 円
+            </td>
+        </tr>
+
+        <tr>
+            <th>利益</th>
+            <td class="{% if object.profit_amount < 0 %}text-danger{% elif object.profit_amount > 0 %}text-success{% endif %}">
+                {% if object.profit_amount > 0 %}+{% endif %}
+                {{ object.profit_amount|floatformat:0|intcomma }} 円
+            </td>
+        </tr>
+
+        <tr>
+            <th>利益率</th>
+            <td class="{% if object.profit_rate < 0 %}text-danger{% elif object.profit_rate > 0 %}text-success{% endif %}">
+                {% if object.profit_rate > 0 %}+{% endif %}
+                {{ object.profit_rate }} %
+            </td>
+        </tr>
+        {% endif %}
+
+    </tbody>
+</table>
+
+{% endblock %}

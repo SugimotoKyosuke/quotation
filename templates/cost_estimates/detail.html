@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block main %}
+
+<div class="mb-4">
+    <a href="{% url 'cost_estimate_index' %}" class="text-decoration-none">
+        <i class="bi bi-arrow-left"></i>
+        原価一覧へ戻る
+    </a>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">{{ object.title }}</h2>
+
+  <a href="{% url 'cost_estimate_edit' object.pk %}" class="btn btn-primary">
+    編集
+  </a>
+</div>
+
+
+<table class="table">
+  <tbody>
+      <tr>
+          <th style="width: 240px;">案件</th>
+          <td>
+            <a href="{% url 'project_detail' object.project.pk %}">{{ object.project.name }}</a>
+          </td>
+      </tr>     
+      <tr>
+          <th style="width: 240px;">仕入先</th>
+          <td>{{ object.vendor_name }}</td>
+      </tr>
+      <tr>
+          <th style="width: 240px;">見積日</th>
+          <td>{{ object.quote_date|date:"Y/m/d" }}</td>
+      </tr>
+      <tr>
+          <th style="width: 240px;">有効期限</th>
+          <td>{{ object.expiration_date|date:"Y/m/d" }}</td>
+      </tr>
+      <tr>
+          <th style="width: 240px;">備考</th>
+          <td>{{ object.note|linebreaksbr }}</td>
+      </tr>      
+      <tr>
+          <th style="width: 240px;">PDFファイル</th>
+          <td>
+            {% if object.pdf_file %}
+              <a href="{{ object.pdf_file.url }}" target="_blank">{{ object.pdf_file.name|cut:"cost_estimates/" }}
+                <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+              </a>
+            {% else %}
+              <span class="text-muted">---------</span>
+            {% endif %}
+          </td>
+      </tr>
+      <tr>
+          <th style="width: 240px;">登録日時</th>
+          <td>{{ object.created_at|date:"Y/m/d H:i" }}</td>
+      </tr>
+      <tr>
+          <th style="width: 240px;">更新日時</th>
+          <td>{{ object.updated_at|date:"Y/m/d H:i" }}</td>
+      </tr>
+  </tbody>
+</table>
+
+<h5 class="mt-4 mb-3" >明細</h5>
+
+<table class="table align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>品目</th>
+      <th>数量</th>
+      <th>単位</th>
+      <th>単価</th>
+      <th>金額</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for line in object.lines.all %}
+    <tr>
+      <td>{{ line.item_name }}</td>
+      <td class="text-end">{{ line.quantity|intcomma }}</td>
+      <td>{{ line.unit }}</td>
+      <td class="text-end {% if line.unit_price < 0 %}text-danger{% endif %}">{{ line.unit_price|floatformat:0|intcomma }} 円</td>
+      <td class="text-end {% if line.amount < 0 %}text-danger{% endif %}">{{ line.amount|floatformat:0|intcomma }} 円</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6" class="text-center text-muted">
+        データがありません
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<table class="table mt-4 w-auto ms-auto text-end">
+    <tbody>
+        <tr>
+            <th>小計</th>
+            <td class=" {% if object.subtotal < 0 %}text-danger{% endif %}">{{ object.subtotal|floatformat:0|intcomma }} 円</td>
+        </tr>
+        <tr>
+            <th>税率</th>
+            <td>{{ object.tax_rate|floatformat:0|intcomma }} %</td>
+        </tr>
+        <tr>
+            <th>消費税</th>
+            <td class=" {% if object.tax_amount < 0 %}text-danger{% endif %}">{{ object.tax_amount|floatformat:0|intcomma }} 円</td>
+        </tr>
+        <tr>
+            <th>合計</th>
+            <td class=" {% if object.total_amount < 0 %}text-danger{% endif %}">{{ object.total_amount|floatformat:0|intcomma }} 円</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<h2 class="mb-4">原価登録</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="row g-3 mb-3">
+
+        <div class="col-lg-12">
+            <label for="{{ form.title.id_for_label }}" class="form-label">件名
+                {% if form.title.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}
+            </label>
+            {{ form.title }}
+        </div>
+
+        <div class="col-lg-12">
+            <label for="{{ form.project.id_for_label }}" class="form-label">案件
+                {% if form.project.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}                
+            </label>
+            {{ form.project }}
+            <a href="{% url 'project_create' %}?next={{ request.path }}" class="btn btn-sm text-primary mt-1">
+                <i class="bi bi-plus-lg"></i> 新しい案件を追加
+            </a>
+        </div>        
+
+        <div class="col-lg-12">
+            <label for="{{ form.vendor_name.id_for_label }}" class="form-label">仕入先
+                {% if form.vendor_name.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}                
+            </label>
+            {{ form.vendor_name }}
+        </div>
+
+        <div class="col-lg-4">
+            <label for="{{ form.quote_date.id_for_label }}" class="form-label">見積日
+                {% if form.quote_date.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}                
+            </label>
+            {{ form.quote_date }}
+        </div>
+
+        <div class="col-lg-4">
+            <label for="{{ form.expiration_date.id_for_label }}" class="form-label">有効期限
+                {% if form.expiration_date.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}                
+            </label>
+            {{ form.expiration_date }}
+        </div>
+
+        <div class="col-lg-4">
+            <label for="{{ form.tax_rate.id_for_label }}" class="form-label">税率（%）
+                {% if form.tax_rate.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}                
+            </label>
+            {{ form.tax_rate }}
+        </div>
+
+        <div class="col-lg-12">
+            <label for="{{ form.note.id_for_label }}" class="form-label">備考</label>
+            {{ form.note }}
+        </div>
+
+        <div class="col-lg-12">
+            <label for="{{ form.pdf_file.id_for_label }}" class="form-label">PDFファイル</label>
+            {{ form.pdf_file }}
+        </div>
+
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+
+        <a href="{% url 'cost_estimate_index' %}" class="btn btn-link text-decoration-none text-primary">
+            キャンセル
+        </a>
+
+        <button type="submit" class="btn btn-primary">
+            次へ
+        </button>
+    </div>
+
+</form>
+
+{% endblock %}

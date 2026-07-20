@@ -1,0 +1,31 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg bg-primary">
+  <div class="container-xxl">
+    <a class="navbar-brand text-white" href="{% url 'estimate_index' %}">
+      <img src="{% static 'images/logo_white.png' %}" alt="ミ・ツモーレ" style="height: 32px;">
+    </a>
+
+    <div class="ms-auto dropdown">
+      <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+          {% if request.user.last_name or request.user.first_name %}
+              {{ request.user.last_name }} {{ request.user.first_name }}
+          {% else %}
+              {{ request.user.username }}
+          {% endif %}
+      </a>
+
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item disabled" href="#">パスワード変更</a></li>
+        <li>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="dropdown-item text-danger">ログアウト</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</nav>

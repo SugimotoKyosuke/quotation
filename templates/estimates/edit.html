@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block main %}
+
+<h2 class="mb-4">見積編集</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="row g-3 mb-3">
+
+        <div class="col-lg-12">
+            <label class="form-label">件名
+                {% if form.title.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}
+            </label>
+            {{ form.title }}
+        </div>
+
+        <div class="col-lg-6">
+            <label for="{{ form.estimate_number.id_for_label }}" class="form-label">見積番号
+                {% if form.estimate_number.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}
+            </label>
+            {{ form.estimate_number }}
+        </div>        
+
+        <div class="col-lg-6">
+            <label class="form-label">
+                ステータス
+            </label>
+            {{ form.status }}
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label">案件
+                {% if form.project.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}                
+            </label>
+            {{ form.project }}
+        </div>        
+        
+        <div class="col-lg-6">
+            <label class="form-label">原価
+                {% if form.cost_estimate.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}                
+            </label>
+            {{ form.cost_estimate }}
+        </div>        
+
+        <div class="col-lg-4">
+            <label class="form-label">見積日
+                {% if form.quote_date.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}                
+            </label>
+            {{ form.quote_date }}
+        </div>
+
+        <div class="col-lg-4">
+            <label class="form-label">有効期限
+                {% if form.expiration_date.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}                
+            </label>
+            {{ form.expiration_date }}
+        </div>
+
+        <div class="col-lg-4">
+            <label class="form-label">税率（%）
+                {% if form.tax_rate.field.required %}
+                <span class="badge rounded-pill text-danger bg-danger-subtle ms-1 small px-2 py-1">必須</span>
+                {% endif %}                
+            </label>
+            {{ form.tax_rate }}
+        </div>
+
+        <div class="col-lg-12">
+            <label class="form-label">備考</label>
+            {{ form.note }}
+        </div>
+
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+        <h5 class="mb-0">明細</h5>
+
+        <a href="{% url 'estimate_line_create' object.pk %}" class="btn btn-outline-primary">
+            <i class="bi bi-plus-lg"></i>明細追加
+        </a>
+    </div>
+
+    <table class="table align-middle">
+        <thead class="table-light">
+            <tr>
+                <th></th>
+                <th>品目</th>
+                <th>数量</th>
+                <th>単位</th>
+                <th>単価</th>
+                <th>金額</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+
+        <tbody id="line-list">
+            {% for line in object.lines.all %}
+            <tr data-id="{{ line.pk }}">
+                <td class="text-center drag-handle"><i class="bi bi-grip-horizontal"></i></td>
+                <td>{{ line.item_name }}</td>
+                <td class="text-end">{{ line.quantity|intcomma }}</td>
+                <td>{{ line.unit }}</td>
+                <td class="text-end {% if line.unit_price < 0 %}text-danger{% endif %}">{{ line.unit_price|floatformat:0|intcomma }} 円</td>
+                <td class="text-end {% if line.amount < 0 %}text-danger{% endif %}">{{ line.amount|floatformat:0|intcomma }} 円</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'estimate_line_edit' line.pk %}"
+                        class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" data-bs-title="編集">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'estimate_line_delete' line.pk %}"
+                        class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" data-bs-title="削除">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                    データがありません
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-end gap-2">
+
+        <a href="{% url 'estimate_index' %}" class="btn btn-link text-decoration-none text-primary">
+            キャンセル
+        </a>
+
+        <button type="submit" class="btn btn-primary">
+            保存
+        </button>
+    </div>
+
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+    const lineList = document.getElementById('line-list');
+
+    if (lineList) {
+        new Sortable(lineList, {
+            animation: 150,
+
+            onEnd: function () {
+
+                const orders = [];
+
+                document.querySelectorAll('#line-list tr').forEach(row => {
+                    orders.push(row.dataset.id);
+                });
+
+                const params = new URLSearchParams();
+
+                orders.forEach(id => {
+                    params.append("orders[]", id);
+                });
+
+                fetch(
+                    "{% url 'estimate_line_order' object.pk %}",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+
+                        body: params
+                    }
+                );
+            }
+        });
+    }
+</script>
+
+{% endblock %}

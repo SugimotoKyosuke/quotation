@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block main %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">見積一覧</h2>
+
+  <a href="{% url 'estimate_create' %}" class="btn btn-primary">
+    新規登録
+  </a>
+</div>
+
+<form method="get" class="row mb-3">
+  <div class="col-lg-6">
+    <div class="input-group">
+
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+
+      <input type="text"
+             name="q"
+             value="{{ query }}"
+             class="form-control"
+             placeholder="キーワードを入力してください">   
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <select name="status" class="form-select" onchange="this.form.submit()">
+        <option value="">すべてのステータス</option>
+        {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if status == value %}selected{% endif %}>
+            {{ label }}
+        </option>
+        {% endfor %}
+    </select>       
+  </div>
+</form>
+
+<table class="table table-hover align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>件名</th>
+      <th>ステータス</th>      
+      <th>案件</th>      
+      <th>見積番号</th>
+      <th>見積日</th>
+      <th>合計金額</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for object in object_list %}
+    <tr>
+      <td>
+        <a href="{% url 'estimate_detail' object.pk %}">
+          {{ object.title }}
+        </a>
+      </td>
+
+      <td>
+        <span class="status-badge {{ object.get_status_badge_class }}">
+            {{ object.get_status_display }}
+        </span>
+      </td>   
+      
+      <td>
+        <div>{{ object.project.name }}</div>
+        <small class="text-secondary">{{ object.project.customer_name }} - {{ object.project.service }} @ {{ object.project.assignee_user.last_name }} {{ object.project.assignee_user.first_name }}</small>
+      </td>
+      
+      <td>
+        {{ object.estimate_number }}
+      </td>       
+      
+      <td>
+        {{ object.quote_date|date:"Y/m/d" }}
+      </td>
+      
+      <td class="text-end">
+        {{ object.total_amount|floatformat:0|intcomma }} 円
+      </td>
+    </tr>
+
+    {% empty %}
+    <tr>
+      <td colspan="6" class="text-center text-muted py-4">
+        データがありません
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-end">
+
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link"
+           href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+          前へ
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">前へ</span>
+      </li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <li class="page-item active">
+          <span class="page-link">{{ num }}</span>
+        </li>
+      {% else %}
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+            {{ num }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link"
+           href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+          次へ
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">次へ</span>
+      </li>
+    {% endif %}
+
+  </ul>
+</nav>
+
+{% endblock %}

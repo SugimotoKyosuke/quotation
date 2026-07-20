@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="mb-4">
+    <a href="{% url 'project_index' %}" class="text-decoration-none">
+        <i class="bi bi-arrow-left"></i>
+        案件一覧へ戻る
+    </a>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">{{ object.name }}</h2>
+
+  <a href="{% url 'project_edit' object.pk %}" class="btn btn-primary">
+    編集
+  </a>
+</div>
+
+<table class="table">
+    <tbody>
+        <tr>
+            <th style="width: 240px;">顧客名</th>
+            <td>{{ object.customer_name }}</td>
+        </tr>
+        <tr>
+            <th style="width: 240px;">サービス</th>
+            <td>{{ object.service }}</td>
+        </tr>
+        <tr>
+            <th style="width: 240px;">担当者</th>
+            <td>{{ object.assignee_user.last_name }} {{ object.assignee_user.first_name }}</td>
+        </tr>
+        <tr>
+            <th style="width: 240px;">備考</th>
+            <td>{{ object.note }}</td>
+        </tr>
+        <tr>
+            <th style="width: 240px;">登録日時</th>
+            <td>{{ object.created_at|date:"Y/m/d H:i" }}</td>
+        </tr>
+        <tr>
+            <th style="width: 240px;">更新日時</th>
+            <td>{{ object.updated_at|date:"Y/m/d H:i" }}</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock %}

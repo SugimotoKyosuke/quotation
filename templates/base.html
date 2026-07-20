@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+ 
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quotation</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      --bs-primary: #2AAB9F;
+      --bs-primary-rgb: 42, 171, 159;
+
+      --color-primary: #2AAB9F;
+      --color-draft-bg: #F1EFE8;     --color-draft-text: #444441;
+      --color-approved-bg: #E3F5F3; --color-approved-text: #1B685F;
+      --color-rejected-bg: #FCEBEB; --color-rejected-text: #791F1F;
+      --color-submitted-bg: #FBF0DE; --color-submitted-text: #8A5C1E;
+      --color-won-bg: #E3F5F3;       --color-won-text: #1B685F;
+      --color-lost-bg: #F1EFE8;      --color-lost-text: #2C2C2A;
+    }
+
+    .btn-primary {
+      --bs-btn-bg: #2AAB9F;
+      --bs-btn-border-color: #2AAB9F;
+      --bs-btn-hover-bg: #23948A;
+      --bs-btn-hover-border-color: #23948A;
+      --bs-btn-active-bg: #1F857B;
+      --bs-btn-active-border-color: #1F857B;
+      --bs-btn-disabled-bg: #2AAB9F;
+      --bs-btn-disabled-border-color: #2AAB9F;
+    }
+
+    .btn-outline-primary {
+      --bs-btn-color: #2AAB9F;
+      --bs-btn-border-color: #2AAB9F;
+      --bs-btn-hover-bg: #2AAB9F;
+      --bs-btn-hover-border-color: #2AAB9F;
+      --bs-btn-active-bg: #1F857B;
+      --bs-btn-active-border-color: #1F857B;
+      --bs-btn-disabled-color: #2AAB9F;
+      --bs-btn-disabled-border-color: #2AAB9F;
+    }
+
+    .nav-pills {
+      --bs-nav-pills-link-active-bg: #2AAB9F;
+    }
+
+    .navbar.bg-primary {
+      background-color: #2AAB9F !important;
+    }
+
+    .pagination {
+      --bs-pagination-active-bg: #2AAB9F;
+      --bs-pagination-active-border-color: #2AAB9F;
+      --bs-pagination-color: #2AAB9F;
+      --bs-pagination-hover-color: #23948A;
+    }
+
+    a {
+      color: #2AAB9F;
+    }
+    a:hover {
+      color: #23948A;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      border: none;
+    }
+    .status-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .status-draft     { background: var(--color-draft-bg);     color: var(--color-draft-text); }
+    .status-approved  { background: var(--color-approved-bg);  color: var(--color-approved-text); }
+    .status-rejected  { background: var(--color-rejected-bg);  color: var(--color-rejected-text); }
+    .status-submitted { background: var(--color-submitted-bg); color: var(--color-submitted-text); }
+    .status-won        { background: var(--color-won-bg);       color: var(--color-won-text); }
+    .status-lost        { background: var(--color-lost-bg);      color: var(--color-lost-text); }
+  </style>
+</head>
+ 
+<body>
+
+  <header class="sticky-top">
+    {% block header %}
+      {% include 'snippets/header.html' %}
+    {% endblock %}
+  </header>
+  
+  <div class="container-xxl my-4 px-4">
+    <div class="row">
+
+      <aside class="col-lg-3">
+        {% block sidebar %}
+        {% include 'snippets/aside.html' %}
+        {% endblock %}
+      </aside>
+      
+      <main class="col-lg-9">
+        {% block main %}
+        {% endblock %}
+      </main>
+      
+    </div>
+  </div>
+ 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const tooltipList = [...document.querySelectorAll('[data-bs-toggle="tooltip"]')]
+      .map(el => new bootstrap.Tooltip(el));
+  </script>
+</body>
+ 
+</html>

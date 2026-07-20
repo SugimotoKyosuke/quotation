@@ -1,0 +1,38 @@
+{% with url_name=request.resolver_match.url_name %}
+
+
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary position-sticky" style="width: 280px; top: 80px; height: calc(100vh - 100px); overflow-y: auto;">
+  <ul class="nav nav-pills flex-column mb-auto">
+    <li class="nav-item">
+        <a href="{% url 'estimate_index' %}"
+            class="nav-link {% if '/estimates/' in request.path %}active{% else %}link-body-emphasis{% endif %}">
+            見積管理
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a href="{% url 'project_index' %}"
+            class="nav-link {% if '/projects/' in request.path %}active{% else %}link-body-emphasis{% endif %}">
+            案件管理
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a href="{% url 'cost_estimate_index' %}"
+            class="nav-link {% if '/cost-estimates/' in request.path %}active{% else %}link-body-emphasis{% endif %}">
+            原価管理
+        </a>
+    </li>
+    
+    {% if request.user.is_superuser %}
+    <li class="border-top my-3"></li>
+    <li class="nav-item" data-bs-toggle="tooltip" data-bs-title="Django 管理サイトに移動" data-bs-placement="bottom">
+      <a href="{% url 'admin:index' %}" class="nav-link link-body-emphasis" target="_blank" rel="noopener noreferrer">
+        管理ユーザー設定
+        <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+</div>
+{% endwith %}

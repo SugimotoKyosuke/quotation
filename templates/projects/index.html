@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">案件一覧</h2>
+
+  <a href="{% url 'project_create' %}" class="btn btn-primary">
+    新規登録
+  </a>
+</div>
+
+<form method="get" class="row mb-3">
+  <div class="col-lg-6">
+    <div class="input-group">
+      
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+
+      <input type="text"
+             name="q"
+             value="{{ query }}"
+             class="form-control"
+             placeholder="キーワードを入力してください">
+    </div>
+  </div>
+</form>
+
+<table class="table table-hover align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>案件名</th>
+      <th>顧客名</th>
+      <th>サービス</th>
+      <th>担当者</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for object in object_list %}
+    <tr>
+      <td>
+        <a href="{% url 'project_detail' object.pk %}">{{ object.name }}</a>
+      </td>
+      <td>
+        {{ object.customer_name }}
+      </td>
+      <td>
+        {{ object.service }}
+      </td>
+      <td>
+        {{ object.assignee_user.last_name }} {{ object.assignee_user.first_name }}
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4" class="text-center text-muted py-4">
+        データがありません
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-end">
+
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link"
+           href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+          前へ
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">前へ</span>
+      </li>
+    {% endif %}
+
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <li class="page-item active">
+          <span class="page-link">{{ num }}</span>
+        </li>
+      {% else %}
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+            {{ num }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link"
+           href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+          次へ
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">次へ</span>
+      </li>
+    {% endif %}
+
+  </ul>
+</nav>
+
+{% endblock %}
