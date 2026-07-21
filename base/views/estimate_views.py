@@ -16,6 +16,9 @@ from django.shortcuts import get_object_or_404
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+import os
+from django.conf import settings
+
 
 class EstimateListView(LoginRequiredMixin, ListView):
   model = Estimate
@@ -159,14 +162,14 @@ class EstimatePDFView(LoginRequiredMixin, View):
             pk=pk
         )
 
+        font_path = os.path.join(settings.STATIC_ROOT, 'fonts', 'ipaexg.ttf')
+
         html_string = render_to_string('estimates/pdf.html', {
             'estimate': estimate,
+            'font_path': font_path,
         })
 
-        pdf_file = HTML(
-            string=html_string,
-            base_url=request.build_absolute_uri()
-        ).write_pdf()
+        pdf_file = HTML(string=html_string).write_pdf()
 
         response = HttpResponse(pdf_file, content_type='application/pdf')
         response['Content-Disposition'] = f'inline; filename="estimate_{estimate.pk}.pdf"'
