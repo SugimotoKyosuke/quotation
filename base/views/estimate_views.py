@@ -163,7 +163,10 @@ class EstimatePDFView(LoginRequiredMixin, View):
             'estimate': estimate,
         })
 
-        pdf_file = HTML(string=html_string).write_pdf()
+        pdf_file = HTML(
+            string=html_string,
+            base_url=request.build_absolute_uri()
+        ).write_pdf()
 
         response = HttpResponse(pdf_file, content_type='application/pdf')
         response['Content-Disposition'] = f'inline; filename="estimate_{estimate.pk}.pdf"'

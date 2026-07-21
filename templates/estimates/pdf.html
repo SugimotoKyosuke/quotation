@@ -1,3 +1,4 @@
+{% load static %}
 {% load humanize %}
 <!DOCTYPE html>
 <html>
@@ -8,8 +9,13 @@
         size: A4;
         margin: 20mm;
     }
+    @font-face {
+    font-family: 'IPAexGothic';
+    src: url('{% static "fonts/ipaexg.ttf" %}');
+    }
+
     body {
-        font-family: "Yu Gothic", "Noto Sans JP", sans-serif;
+        font-family: "IPAexGothic", sans-serif;
         font-size: 12px;
         color: #333;
     }
